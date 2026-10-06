@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'node:crypto';
-import { db, products, cart, setCart, quote, createOrder, orderDetail, changeStatus, saveProduct, verifyPassword, hashPassword, string, audit, fail, getCategories, getArticles, getSettings, saveSettings, saveArticle, deleteArticle } from '../../../lib/db.mjs';
+import { db, products, cart, setCart, quote, createOrder, orderDetail, changeStatus, saveProduct, verifyPassword, hashPassword, string, audit, fail, getCategories, getArticles, getSettings, saveSettings, getStores, getJobs, saveStore, deleteStore, saveJob, deleteJob, saveArticle, deleteArticle } from '../../../lib/db.mjs';
 export const runtime='nodejs';
 const attempts=new Map<string,{count:number,until:number}>();
 function rate(key:string){let v=attempts.get(key);if(!v||v.until<Date.now()){v={count:0,until:Date.now()+60000};attempts.set(key,v);}if(++v.count>10)fail('RATE_LIMIT','Thử lại sau một phút.',429);if(attempts.size>10000)for(const [k,x] of attempts)if(x.until<Date.now())attempts.delete(k);}
@@ -11,6 +11,8 @@ if(p==='products'&&method==='GET')data=products();
 else if(p==='categories'&&method==='GET')data=getCategories();
 else if(p==='articles'&&method==='GET')data=getArticles();
 else if(p==='settings'&&method==='GET')data=getSettings();
+else if(p==='stores'&&method==='GET')data=getStores();
+else if(p==='jobs'&&method==='GET')data=getJobs();
 else if(p==='cart'&&method==='GET')data=cart(token);
 else if(p==='cart/items'&&method==='POST')data=setCart(token,body.productId,body.quantity);
 else if(p==='checkout/preview'&&method==='POST')data=quote(token,body.coupon);
@@ -34,6 +36,14 @@ else if(/^admin\/articles\/\d+$/.test(p)&&method==='PATCH')data=saveArticle(body
 else if(/^admin\/articles\/\d+$/.test(p)&&method==='DELETE')data=deleteArticle(Number(p.split('/')[2]),admin.id);
 else if(p==='admin/settings'&&method==='GET')data=getSettings();
 else if(p==='admin/settings'&&method==='PATCH')data=saveSettings(body,admin.id);
+else if(p==='admin/stores'&&method==='GET')data=getStores();
+else if(p==='admin/stores'&&method==='POST')data=saveStore(body,null,admin.id);
+else if(/^admin\/stores\/\d+$/.test(p)&&method==='PATCH')data=saveStore(body,Number(p.split('/')[2]),admin.id);
+else if(/^admin\/stores\/\d+$/.test(p)&&method==='DELETE')data=deleteStore(Number(p.split('/')[2]),admin.id);
+else if(p==='admin/jobs'&&method==='GET')data=getJobs(true);
+else if(p==='admin/jobs'&&method==='POST')data=saveJob(body,null,admin.id);
+else if(/^admin\/jobs\/\d+$/.test(p)&&method==='PATCH')data=saveJob(body,Number(p.split('/')[2]),admin.id);
+else if(/^admin\/jobs\/\d+$/.test(p)&&method==='DELETE')data=deleteJob(Number(p.split('/')[2]),admin.id);
 else if(p==='admin/password'&&method==='POST'){const a=db.prepare('SELECT * FROM admins WHERE id=?').get(admin.id);if(!verifyPassword(string(body.current),a.password))fail('INVALID_PASSWORD','Mật khẩu hiện tại không đúng.');const password=string(body.password);if(password.length<12)fail('WEAK_PASSWORD','Mật khẩu mới cần ít nhất 12 ký tự.');db.prepare('UPDATE admins SET password=? WHERE id=?').run(hashPassword(password),admin.id);db.prepare('DELETE FROM sessions WHERE admin_id=?').run(admin.id);audit(admin.id,'PASSWORD_CHANGE','Đổi mật khẩu');data={};}
 else fail('NOT_FOUND','Không tìm thấy chức năng.',404);
 }else fail('NOT_FOUND','Không tìm thấy chức năng.',404);

@@ -1,8 +1,8 @@
 'use client';
 import {useState,useEffect} from 'react';
 import {api, money} from '@/lib/api';
-import {ArticlesManager,ContactEditor,PageEditor,PAGE_TABS} from './components/ContentManagers';
-const CONTENT_TABS=['articles','contact',...Object.keys(PAGE_TABS)];
+import {ArticlesManager,ContactEditor,PageEditor,ListManager,PAGE_TABS,LIST_TABS} from './components/ContentManagers';
+const CONTENT_TABS=['articles','contact',...Object.keys(PAGE_TABS),...Object.keys(LIST_TABS)];
 
 const statuses:any={PENDING:'Chờ xác nhận',CONFIRMED:'Đã xác nhận',PACKING:'Đóng gói',SHIPPING:'Đang giao',DELIVERED:'Giao thành công',CANCELLED:'Đã hủy'};
 const statusColors:any={PENDING:'bg-yellow-100 text-yellow-800',CONFIRMED:'bg-blue-100 text-blue-800',PACKING:'bg-indigo-100 text-indigo-800',SHIPPING:'bg-purple-100 text-purple-800',DELIVERED:'bg-green-100 text-green-800',CANCELLED:'bg-red-100 text-red-800'};
@@ -73,7 +73,7 @@ export default function Admin(){
           <a href="/" className="text-xl font-bold text-primary">DALIFA<span className="font-light text-on-surface">BOOKS</span></a>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {[['dashboard','Tổng quan','dashboard'],['products','Sản phẩm','inventory_2'],['orders','Đơn hàng','receipt_long'],['inventory','Lịch sử kho','history'],['articles','Tin tức - Sự kiện','newspaper'],['contact','Thông tin liên hệ','contact_phone'],...Object.entries(PAGE_TABS).map(([k,v]:any)=>[k,v.title,v.icon]),['password','Đổi mật khẩu','lock']].map(([id,label,icon])=>(
+          {[['dashboard','Tổng quan','dashboard'],['products','Sản phẩm','inventory_2'],['orders','Đơn hàng','receipt_long'],['inventory','Lịch sử kho','history'],['articles','Tin tức - Sự kiện','newspaper'],['contact','Thông tin liên hệ','contact_phone'],...Object.entries({...PAGE_TABS,...LIST_TABS}).map(([k,v]:any)=>[k,v.title,v.icon]),['password','Đổi mật khẩu','lock']].map(([id,label,icon])=>(
             <button key={id} onClick={()=>setTab(id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors ${tab===id?'bg-primary-container text-on-primary font-bold':'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'}`}>
               <span className="material-symbols-outlined text-[20px]">{icon}</span>
               {label}
@@ -94,7 +94,7 @@ export default function Admin(){
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <header className="h-16 bg-surface border-b border-surface-container-high flex items-center justify-between px-8 shrink-0">
-          <h1 className="text-xl font-bold text-on-surface">{({dashboard:'Tổng quan',products:'Quản lý Sản phẩm',orders:'Quản lý Đơn hàng',inventory:'Lịch sử kho',password:'Bảo mật tài khoản',articles:'Tin tức - Sự kiện',contact:'Thông tin liên hệ'} as any)[tab]||PAGE_TABS[tab]?.title}</h1>
+          <h1 className="text-xl font-bold text-on-surface">{({dashboard:'Tổng quan',products:'Quản lý Sản phẩm',orders:'Quản lý Đơn hàng',inventory:'Lịch sử kho',password:'Bảo mật tài khoản',articles:'Tin tức - Sự kiện',contact:'Thông tin liên hệ'} as any)[tab]||PAGE_TABS[tab]?.title||LIST_TABS[tab]?.title}</h1>
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center">
               <span className="material-symbols-outlined text-[18px]">person</span>
@@ -111,6 +111,7 @@ export default function Admin(){
 
             {tab==='articles'&&<ArticlesManager onError={setError} onNotice={setNotice}/>}
             {tab==='contact'&&<ContactEditor onError={setError} onNotice={setNotice}/>}
+            {LIST_TABS[tab]&&<ListManager tab={tab} onError={setError} onNotice={setNotice}/>}
             {PAGE_TABS[tab]&&<PageEditor tab={tab} onError={setError} onNotice={setNotice}/>}
 
             {/* Dashboard */}

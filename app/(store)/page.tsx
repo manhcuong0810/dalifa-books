@@ -95,10 +95,6 @@ export default function HomePage() {
 <div className="slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 z-0" id="slide-2">
 <img alt="Sách Mới Nổi Bật Alpha Books" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VvqCL_snH2z2UhhoVy1aLVM3peVGxh16l0gndUT73Dl2WL_X2rUluVkJkzvbXmrNdkaWtSuK_r95BOqSaxd3ChUNNbw32U50cY6DtOoenYsw2REPPOGU8ouu72EAtimcAWJMcj2_hw6Z_KxPWJwp1O0xtcX--CQjxsuwy0WYJ-pock3GPzrQwcmghh2LwEMmVNKBguneTN3SMdCCa0NRFYVOCczFAZGuxbNBUtMzlL-o-A2GmhfBrC26s" />
 </div>
-{/*  Slide 4  */}
-<div className="slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 z-0" id="slide-3">
-<img alt="Hợp tác xuất bản trọn gói từ A-Z BIZONE" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WuxPLUyW8gHz_Murt-BKe62s9d9effRoAiZfj4VOdtcQrqWr4eSYX8FvlSRVsEe6ddSLjekydANy_19NprxPDDdTbMAzI9jqzy167IS6n1bHsnwS6Wi0R_i2KzfqfKI9QtmCShfiRsfcBS4MGz_L8h3IRifB-DWWEHRA5tP0w35rM4QI7EMozEY0gpDeXifhC8W_VMJT9ccLdrYr9BnBvd6lBpSb8mINZENu40B0VhbpJmRznk2MGGBw" />
-</div>
 {/*  Slider Arrow Controls  */}
 <button aria-label="Banner trước" className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/80 hover:bg-white text-on-surface flex items-center justify-center shadow-lg transition hover:scale-105" onClick={() => changeSlide(-1)} type="button">
 <span className="material-symbols-outlined text-[24px]">chevron_left</span>
@@ -108,7 +104,7 @@ export default function HomePage() {
 </button>
 </div>
 {/*  Slide Thumbnails Navigation  */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+<div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
 <button className="thumb-btn flex items-center gap-3 p-2.5 rounded-xl bg-surface-card shadow-sm hover:shadow-md transition text-left" onClick={() => goToSlide(0)} type="button">
 <div className="w-14 h-9 rounded-md overflow-hidden shrink-0">
 <img alt="Xuân Bính Ngọ" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WGvVONj61RXRJl4v9YvaohZ-P_M1MgHnHpxYju-D3xG-NupfKYXkHpIGkrg0STBWoyilZv8R6r_jo7fEqKyH2t5HG8JMA-pepq97L1UsTHnEhVKVKXZX4sFwINa1iMh7P1e0UDIOx-fvoc6bcQ-232soLFpfd0W5PQM1rQ93FeWLLtcBiTJ9T5qHVITsd1UfjyBsvgFSVSFDLzFmgeQFfvD-TqrBFVIbFROrvr9GxAhLGAo0l7KJXvbWk" />
@@ -136,15 +132,7 @@ export default function HomePage() {
 <p className="font-body-sm text-body-sm text-text-muted truncate">Cập nhật xu thế tri thức</p>
 </div>
 </button>
-<button className="thumb-btn flex items-center gap-3 p-2.5 rounded-xl bg-surface-card shadow-sm hover:shadow-md transition text-left" onClick={() => goToSlide(3)} type="button">
-<div className="w-14 h-9 rounded-md overflow-hidden shrink-0">
-<img alt="Xuất bản Doanh nghiệp" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WuxPLUyW8gHz_Murt-BKe62s9d9effRoAiZfj4VOdtcQrqWr4eSYX8FvlSRVsEe6ddSLjekydANy_19NprxPDDdTbMAzI9jqzy167IS6n1bHsnwS6Wi0R_i2KzfqfKI9QtmCShfiRsfcBS4MGz_L8h3IRifB-DWWEHRA5tP0w35rM4QI7EMozEY0gpDeXifhC8W_VMJT9ccLdrYr9BnBvd6lBpSb8mINZENu40B0VhbpJmRznk2MGGBw" />
-</div>
-<div className="min-w-0">
-<p className="font-label-md text-label-md font-bold text-on-surface truncate">Hợp Tác Xuất Bản</p>
-<p className="font-body-sm text-body-sm text-text-muted truncate">BIZONE đồng hành</p>
-</div>
-</button>
+
 </div>
 </div>
 </section>
@@ -397,110 +385,7 @@ export default function HomePage() {
 </div>
 </div>
 </section>
-{/*  6. SÁCH DÀNH CHO BẠN (COMBO & GỢI Ý)  */}
-<section className="py-12 lg:py-16 bg-surface-canvas">
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-<div className="text-center mb-10">
-<h2 className="font-headline-xl text-headline-xl font-bold text-on-surface">Chuyên gia đánh giá về DalifaBooks</h2>
-<div className="flex items-center justify-center gap-2 mt-2 text-primary">
-<div className="w-12 h-0.5 bg-primary-container"></div>
-<span className="material-symbols-outlined text-[20px]">auto_awesome</span>
-<div className="w-12 h-0.5 bg-primary-container"></div>
-</div>
-<p className="font-body-md text-body-md text-text-muted mt-2">Tuyển tập combo tiết kiệm và những tác phẩm đột phá tư duy</p>
-</div>
-<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-{/*  Item 1: Combo Hạnh Phúc  */}
-<div className="group bg-surface-card rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-<div>
-<div className="relative aspect-square w-full rounded-lg overflow-hidden bg-surface-container-low mb-3">
-<span className="absolute top-2 left-2 z-10 px-2.5 py-0.5 rounded bg-badge-discount text-white font-label-sm text-label-sm font-bold">-20%</span>
-<img alt="Combo Hạnh Phúc - Tuyển tập Hồi Ký Chiến Trường và Tù Binh Thương Trường" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1Xu0S_yUwvXgfaR0Y1aOhD9trUoe1TwKHycRUlIrTtBw3ty79C3A3SoJ0HHmyi8GRFyJTaPYLglge4nOpKhF4OqZLxRpgQKj5q4UWyPMYea6VoMaAVzM_fNi_e56qWiquw0Rx_ljyZx1Hh9qlLV9RCOXY5lQsJGUWA_Feu3uKokp2aJTTvtA37hMwVQ21ZxgWubrW4UoBuOBmbCqFwvVZIuN9-wlnw6imiK1sr42x8LasoYFhZZpqak6ec" />
-</div>
-<span className="font-label-sm text-label-sm text-primary font-bold uppercase">Combo Đặc Biệt</span>
-<h3 className="font-headline-sm text-headline-sm font-semibold text-on-surface line-clamp-2 group-hover:text-primary transition-colors">
-              Combo Hạnh Phúc - Từ Sông Bến Hải Đến Dinh Độc Lập
-            </h3>
-</div>
-<div className="mt-4 pt-2">
-<div className="flex items-baseline gap-2 mb-3">
-<span className="font-price-hero text-price-hero text-primary font-bold">676.800₫</span>
-<span className="font-body-sm text-body-sm text-text-muted line-through">846.000₫</span>
-</div>
-<button className="w-full py-2 bg-surface-container hover:bg-primary-container hover:text-on-primary text-primary font-label-md text-label-md font-bold rounded-lg transition" type="button">
-              Thêm vào giỏ
-            </button>
-</div>
-</div>
-{/*  Item 2: Combo Tự Do  */}
-<div className="group bg-surface-card rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-<div>
-<div className="relative aspect-square w-full rounded-lg overflow-hidden bg-surface-container-low mb-3">
-<span className="absolute top-2 left-2 z-10 px-2.5 py-0.5 rounded bg-badge-discount text-white font-label-sm text-label-sm font-bold">-20%</span>
-<img alt="Combo Tự Do - Chuyện Của Chúng Tôi" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1Xdl6cj12kS1U0_EDjuxPxJmRKQQRp2xBaGVOL-YgAw7yWLf0mr755_nzmKAA6xsS_KaB-UMrN6JD6j6HRWyEQ7VfQzVGQ5DZhBOP2anMyfH7S6xUpFRowLhR3oAFeHeIWOdyPq_kDI5Ol5EtMX85zmWI0IHWQO9xT7kPBu03bKJ8hezCObDQo9sUAXl7b3TEg6rMxba2HLecl4bdv4V5qldUUJ1-m26yg6-Tk7eBCeeU65pjRkIlR1qtA" />
-</div>
-<span className="font-label-sm text-label-sm text-primary font-bold uppercase">Combo Truyền Cảm Hứng</span>
-<h3 className="font-headline-sm text-headline-sm font-semibold text-on-surface line-clamp-2 group-hover:text-primary transition-colors">
-              Combo Tự Do - Chuyện Của Chúng Tôi + Tù Binh Thương Trường
-            </h3>
-</div>
-<div className="mt-4 pt-2">
-<div className="flex items-baseline gap-2 mb-3">
-<span className="font-price-hero text-price-hero text-primary font-bold">286.400₫</span>
-<span className="font-body-sm text-body-sm text-text-muted line-through">358.000₫</span>
-</div>
-<button className="w-full py-2 bg-surface-container hover:bg-primary-container hover:text-on-primary text-primary font-label-md text-label-md font-bold rounded-lg transition" type="button">
-              Thêm vào giỏ
-            </button>
-</div>
-</div>
-{/*  Item 3: Siêu Dự Báo  */}
-<div className="group bg-surface-card rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-<div>
-<div className="relative aspect-square w-full rounded-lg overflow-hidden bg-surface-container-low mb-3">
-<span className="absolute top-2 left-2 z-10 px-2.5 py-0.5 rounded bg-badge-discount text-white font-label-sm text-label-sm font-bold">-20%</span>
-<img alt="Siêu Dự Báo - Superforecasting" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1XtEadGI12QEZPMz9I2WkApYazDh5GblKze73XG-W9sdSB79bmGPy2U6FSD7sz9mu9ziIs3bHCa2U_sFWnDehSRlIBoww3B6HoHSVFvHZqpC9N3c0xJhOJpuqymE0A3KKtA2voqnzb01GwCViFi6xEGN7XOPRD44SALYT-UV3BxzBuheYpcnYC0_NihzVZPcXkSzZ_cNALgtQlIUpcYqNKj2HclFzw1ij6nyn47oce8CcvYiS9Ixz6asiI" />
-</div>
-<span className="font-label-sm text-label-sm text-primary font-bold uppercase">Kỹ Năng & Chiến Lược</span>
-<h3 className="font-headline-sm text-headline-sm font-semibold text-on-surface line-clamp-2 group-hover:text-primary transition-colors">
-              Siêu Dự Báo - Superforecasting: Phương Pháp Trên Tầm Chuyên Gia
-            </h3>
-</div>
-<div className="mt-4 pt-2">
-<div className="flex items-baseline gap-2 mb-3">
-<span className="font-price-hero text-price-hero text-primary font-bold">175.200₫</span>
-<span className="font-body-sm text-body-sm text-text-muted line-through">219.000₫</span>
-</div>
-<button className="w-full py-2 bg-surface-container hover:bg-primary-container hover:text-on-primary text-primary font-label-md text-label-md font-bold rounded-lg transition" type="button">
-              Thêm vào giỏ
-            </button>
-</div>
-</div>
-{/*  Item 4: Chiến Lược Marketing Công Nghệ  */}
-<div className="group bg-surface-card rounded-xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-<div>
-<div className="relative aspect-square w-full rounded-lg overflow-hidden bg-surface-container-low mb-3">
-<span className="absolute top-2 left-2 z-10 px-2.5 py-0.5 rounded bg-badge-discount text-white font-label-sm text-label-sm font-bold">-20%</span>
-<img alt="Chiến Lược Marketing Cho Thị Trường Công Nghệ" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1V3Dfrlv0TvVs0y9slMN9KFSWJSv_rCJih9PQl7z9YjYKzj6TPBUZOMAzamom7_kzz2u7wP5yEZuaQRH7QviKOLNV8rtTtDtzd3qlN2RGGZGYbqZGdzBKy8djSllqNZD4o8l__5XJs_D0NOcfyirF8_S_iVA3bhmekSUf86Fcq6OcGHumWVH3VB8omn6KaP7_de2W8F1ZkYe2TgfHLGH00tYvC2Qu1WHUEaIseQEqexlqnZ-LIYm_KFzKM" />
-</div>
-<span className="font-label-sm text-label-sm text-primary font-bold uppercase">Marketing & Bán Hàng</span>
-<h3 className="font-headline-sm text-headline-sm font-semibold text-on-surface line-clamp-2 group-hover:text-primary transition-colors">
-              Crossing The Chasm - Vượt Hố Sâu Thị Trường
-            </h3>
-</div>
-<div className="mt-4 pt-2">
-<div className="flex items-baseline gap-2 mb-3">
-<span className="font-price-hero text-price-hero text-primary font-bold">143.200₫</span>
-<span className="font-body-sm text-body-sm text-text-muted line-through">179.000₫</span>
-</div>
-<button className="w-full py-2 bg-surface-container hover:bg-primary-container hover:text-on-primary text-primary font-label-md text-label-md font-bold rounded-lg transition" type="button">
-              Thêm vào giỏ
-            </button>
-</div>
-</div>
-</div>
-</div>
-</section>
+
 {/*  7. TỦ SÁCH CHUYÊN ĐỀ & ALPHA CARDS  */}
 <section className="py-12 lg:py-16 bg-surface-subtle" id="tusach">
 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
@@ -644,80 +529,7 @@ export default function HomePage() {
 </div>
 </div>
 </section>
-{/*  8. DỊCH VỤ TẠI ALPHA BOOKS (BIZONE)  */}
-<section className="relative py-16 lg:py-20 text-white overflow-hidden" >
-<div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-[2px]"></div>
-<div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-{/*  Info Column  */}
-<div className="lg:col-span-4 space-y-4">
-<span className="font-label-md text-label-md uppercase tracking-widest text-secondary-fixed">Giải pháp tổ chức</span>
-<h2 className="font-headline-xl text-headline-xl font-extrabold uppercase leading-tight text-white">Dịch vụ<br className="" /><span className="text-secondary-fixed">tại DalifaBooks</span></h2>
-<p className="font-body-md text-body-md text-white/80 leading-relaxed text-justify">
-            Trong hành trình 20 năm đồng hành với cộng đồng, chúng tôi thấy nhu cầu ngày càng tăng của doanh nghiệp, các nhà quản lý muốn tiếp cận nhanh hơn đến tri thức quản trị cũng như mong muốn phát triển doanh nghiệp của mình thành một tổ chức học tập.
-          </p>
-<p className="font-body-md text-body-md text-white/90">DalifaBooks ra mắt <strong className="">Trung tâm Tư vấn & Hợp tác xuất bản (BIZONE)</strong> đáp ứng mọi nhu cầu:</p>
-<div className="pt-2">
-<a className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg font-bold hover:bg-secondary-container transition" href="#">
-<span className="">Xem Thêm Dịch Vụ</span>
-<span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-</a>
-</div>
-</div>
-{/*  3 Service Cards  */}
-<div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-{/*  Card 1  */}
-<div className="bg-surface-card text-on-surface rounded-2xl p-5 shadow-2xl flex flex-col justify-between hover:-translate-y-1 transition duration-300">
-<div className="space-y-3">
-<div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-<span className="material-symbols-outlined text-[28px]">fact_check</span>
-</div>
-<h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">Tư Vấn Chọn Sách</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant">
-                Tư vấn sách chuẩn xác cho các bộ phận nhân sự, kinh doanh, tài chính phù hợp với chiến lược chuyên sâu từng giai đoạn.
-              </p>
-</div>
-<div className="pt-4 flex items-center text-primary font-label-sm text-label-sm font-bold">
-<span className="">Chi tiết</span>
-<span className="material-symbols-outlined text-[16px]">chevron_right</span>
-</div>
-</div>
-{/*  Card 2  */}
-<div className="bg-surface-card text-on-surface rounded-2xl p-5 shadow-2xl flex flex-col justify-between hover:-translate-y-1 transition duration-300">
-<div className="space-y-3">
-<div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-<span className="material-symbols-outlined text-[28px]">corporate_fare</span>
-</div>
-<h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">Tủ Sách Doanh Nghiệp</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant">
-                Tư vấn kiến tạo không gian thư viện học tập tri thức, truyền cảm hứng văn hóa đọc bền vững cho cán bộ nhân viên.
-              </p>
-</div>
-<div className="pt-4 flex items-center text-primary font-label-sm text-label-sm font-bold">
-<span className="">Chi tiết</span>
-<span className="material-symbols-outlined text-[16px]">chevron_right</span>
-</div>
-</div>
-{/*  Card 3  */}
-<div className="bg-surface-card text-on-surface rounded-2xl p-5 shadow-2xl flex flex-col justify-between hover:-translate-y-1 transition duration-300">
-<div className="space-y-3">
-<div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary">
-<span className="material-symbols-outlined text-[28px]">handshake</span>
-</div>
-<h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">Hợp Tác Xuất Bản</h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant">
-                Dịch vụ xuất bản trọn gói, bảo hộ bản quyền, biên dịch, in ấn kỷ yếu thương hiệu và sách tác giả độc quyền.
-              </p>
-</div>
-<div className="pt-4 flex items-center text-primary font-label-sm text-label-sm font-bold">
-<span className="">Chi tiết</span>
-<span className="material-symbols-outlined text-[16px]">chevron_right</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+
 {/*  9. CHUYÊN GIA ĐÁNH GIÁ VỀ ALPHA BOOKS (TESTIMONIALS)  */}
 <section className="py-12 lg:py-16 bg-surface-canvas">
 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">

@@ -8,8 +8,6 @@ export const PAGE_TABS:any={
   policy_shipping:{key:'policy_shipping',title:'Chính sách vận chuyển',icon:'local_shipping'},
   policy_privacy:{key:'policy_privacy',title:'Chính sách bảo mật',icon:'shield'},
   policy_return:{key:'policy_return',title:'Chính sách đổi trả',icon:'assignment_return'},
-  stores:{key:'stores_html',title:'Hệ thống nhà sách',icon:'store'},
-  recruitment:{key:'recruitment_html',title:'Tuyển dụng',icon:'work'},
 };
 
 const input='w-full h-11 px-4 rounded-lg bg-surface-container-low border border-surface-container-high focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-on-surface transition-all';
@@ -110,6 +108,62 @@ export function ArticlesManager({onError,onNotice}:P){
         </tbody>
       </table>
       {!list.length&&<div className="p-12 text-center text-on-surface-variant">Chưa có bài viết nào.</div>}
+    </div>
+  </div>;
+}
+
+export const LIST_TABS:any={
+  stores:{title:'Hệ thống nhà sách',icon:'store',api:'admin/stores',addLabel:'Thêm nhà sách',titleKey:'name',
+    fields:[['name','Tên nhà sách','text',true],['address','Địa chỉ','text',true],['phone','Số điện thoại','text'],['hours','Giờ mở cửa','text'],['map_url','Link Google Maps','text'],['sort','Thứ tự hiển thị','number']],
+    sub:(r:any)=>r.address+(r.phone?' · '+r.phone:''),blank:{name:'',address:'',phone:'',hours:'',map_url:'',sort:0}},
+  recruitment:{title:'Tuyển dụng',icon:'work',api:'admin/jobs',addLabel:'Thêm tin tuyển dụng',titleKey:'title',
+    fields:[['title','Vị trí tuyển dụng','text',true],['location','Địa điểm làm việc','text'],['salary','Mức lương','text'],['job_type','Hình thức (Toàn thời gian…)','text'],['deadline','Hạn nộp hồ sơ','text'],['description','Mô tả công việc & yêu cầu (HTML)','textarea'],['active','Đang tuyển (hiển thị trên web)','checkbox']],
+    sub:(r:any)=>[r.location,r.salary,r.deadline&&'Hạn: '+r.deadline].filter(Boolean).join(' · '),blank:{title:'',location:'',salary:'',job_type:'',deadline:'',description:'',active:1},statusKey:'active'},
+};
+
+export function ListManager({tab,onError,onNotice}:P&{tab:string}){
+  const cfg=LIST_TABS[tab];
+  const[rows,setRows]=useState<any[]>([]),[edit,setEdit]=useState<any>(null),[busy,setBusy]=useState(false);
+  const load=()=>api(cfg.api).then(setRows).catch(e=>onError(e.message));
+  useEffect(()=>{setEdit(null);setRows([]);load()},[tab]);
+  async function run(fn:()=>Promise<any>){setBusy(true);onError('');try{await fn()}catch(e:any){onError(e.message)}finally{setBusy(false)}}
+  if(edit)return <form className="bg-surface rounded-2xl shadow-sm border border-surface-container-high overflow-hidden" onSubmit={e=>{e.preventDefault();run(async()=>{await api(cfg.api+(edit.id?'/'+edit.id:''),edit.id?'PATCH':'POST',edit);setEdit(null);await load();onNotice('Đã lưu.')})}}>
+    <div className="px-8 py-5 border-b border-surface-container-high flex items-center gap-3">
+      <button type="button" onClick={()=>setEdit(null)} className="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center"><span className="material-symbols-outlined text-[20px]">arrow_back</span></button>
+      <h2 className="text-lg font-bold">{edit.id?'Cập nhật':cfg.addLabel}</h2>
+    </div>
+    <div className="p-8 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {cfg.fields.map(([k,label,type,req]:any)=><div key={k} className={type==='textarea'?'md:col-span-2':''}>
+          {type==='checkbox'?<label className="flex items-center gap-3 text-sm font-semibold mt-8"><input type="checkbox" className="w-5 h-5 accent-orange-600" checked={!!edit[k]} onChange={e=>setEdit({...edit,[k]:e.target.checked?1:0})}/>{label}</label>:<>
+            <label className="block text-sm font-semibold mb-2">{label}{req&&' *'}</label>
+            {type==='textarea'?<textarea className="w-full min-h-[260px] p-4 rounded-lg bg-surface-container-low border border-surface-container-high focus:ring-2 focus:ring-primary/20 outline-none font-mono text-sm" value={edit[k]||''} onChange={e=>setEdit({...edit,[k]:e.target.value})}/>
+            :<input required={!!req} type={type} min="0" className={input} value={edit[k]??''} onChange={e=>setEdit({...edit,[k]:type==='number'?Number(e.target.value):e.target.value})}/>}</>}
+        </div>)}
+      </div>
+      <div className="flex gap-4 border-t border-surface-container-high pt-6">
+        <button disabled={busy} className={btn}>Lưu</button>
+        <button type="button" onClick={()=>setEdit(null)} className="h-11 px-8 bg-surface text-on-surface-variant font-bold rounded-lg border border-surface-container-high hover:bg-surface-container-low">Hủy bỏ</button>
+      </div>
+    </div>
+  </form>;
+  return <div className="space-y-6">
+    <div className="flex items-center justify-between bg-surface p-4 rounded-2xl shadow-sm border border-surface-container-high">
+      <div className="text-sm text-on-surface-variant">{rows.length} mục</div>
+      <button onClick={()=>setEdit({...cfg.blank})} className="h-10 px-6 bg-primary text-on-primary font-bold rounded-lg hover:bg-primary/90 flex items-center gap-2"><span className="material-symbols-outlined text-[18px]">add</span>{cfg.addLabel}</button>
+    </div>
+    <div className="bg-surface rounded-2xl shadow-sm border border-surface-container-high overflow-hidden divide-y divide-surface-container-high">
+      {rows.map(r=><div key={r.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-surface-container-low/50">
+        <div className="min-w-0">
+          <div className="font-bold flex items-center gap-2">{r[cfg.titleKey]}{cfg.statusKey&&<span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${r[cfg.statusKey]?'bg-green-100 text-green-700':'bg-gray-100 text-gray-600'}`}>{r[cfg.statusKey]?'Đang tuyển':'Đã đóng'}</span>}</div>
+          <div className="text-sm text-text-muted mt-1 truncate">{cfg.sub(r)}</div>
+        </div>
+        <div className="shrink-0 whitespace-nowrap">
+          <button onClick={()=>setEdit({...r})} className="text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-sm font-medium">Sửa</button>
+          <button disabled={busy} onClick={()=>{if(!confirm('Xóa mục này?'))return;run(async()=>{await api(cfg.api+'/'+r.id,'DELETE');await load();onNotice('Đã xóa.')})}} className="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-medium">Xóa</button>
+        </div>
+      </div>)}
+      {!rows.length&&<div className="p-12 text-center text-on-surface-variant">Chưa có dữ liệu.</div>}
     </div>
   </div>;
 }
