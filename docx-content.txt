@@ -1,0 +1,612 @@
+DALIFA BOOKS
+HỒ SƠ TỔNG HỢP DỰ ÁN
+Nghiệp vụ · Database · API · UI/UX Kiến trúc kỹ thuật · Mã nguồn · Localhost
+Phiên bản tài liệu 1.0 Ngày 06/10/2026 Bản phần mềm hiện tại: Localhost 0.1
+Tài liệu bàn giao và hướng dẫn tiếp tục phát triển. Phân biệt chức năng đã chạy được với thiết kế dự kiến.
+
+Mục lục
+1. Phạm vi và cách đọc tài liệu
+2. Mục tiêu kinh doanh và nguyên tắc
+3. Đối tượng và nhóm chức năng
+4. Quy tắc nghiệp vụ sản phẩm
+5. Kho, giỏ hàng và giá
+6. Voucher, giao hàng và thanh toán
+7. Tạo đơn hàng và transaction
+8. Trạng thái đơn và thay đổi tồn
+9. Thiết kế database 1.0
+10. Database SQLite đã triển khai
+11. API mục tiêu của DALIFA BOOKS 1.0
+12. API thực tế của Localhost 0.1
+13. Bảo mật và xác thực
+14. Sitemap thiết kế đầy đủ
+15. UI/UX storefront
+16. UI/UX Admin và thương hiệu
+17. Kiến trúc kỹ thuật mục tiêu
+18. Kiến trúc và mã nguồn Localhost 0.1
+19. Hướng dẫn cài và chạy trên máy Mac của bạn
+20. Tài khoản quản trị và dữ liệu mẫu
+21. Quy trình thử và vận hành localhost
+22. Kiểm tra và bằng chứng hoàn thành
+23. SEO, search, upload và nội dung dự kiến
+24. Môi trường, deploy và vận hành production
+25. Lộ trình từ 0.1 tới 1.0
+Phụ lục A. Ví dụ request thực tế
+Phụ lục B. Các điểm cần chốt trước bán thật
+
+1. Phạm vi và cách đọc tài liệu
+Tài liệu tập hợp các nội dung đã trao đổi về DALIFA BOOKS và phần mã nguồn localhost đã thực hiện. Mục tiêu là có một hồ sơ duy nhất để sử dụng, bàn giao và tiếp tục phát triển nhà sách trực tuyến.
+Tài liệu phân biệt hai mức: “Thiết kế 1.0” là hệ thống dự kiến đầy đủ; “Đã triển khai 0.1” là những chức năng thực sự có trong gói DALIFA-BOOKS-localhost.zip. Các phần trước cuộc hội thoại bị lược bỏ không được coi là tài liệu gốc đã truy xuất; mô hình đầy đủ dưới đây được hệ thống hóa từ nội dung còn thấy và được ghi là thiết kế dự kiến, không phải schema PostgreSQL đã hoàn thành.
+Nguồn đối chiếu triển khai: README.md, package.json, lib/db.mjs, app/page.tsx, app/admin/page.tsx, app/api/[...path]/route.ts và các bài kiểm tra của bản localhost. Tài liệu này không thay thế mã nguồn và không chứa một bản website đã triển khai production.
+2. Mục tiêu kinh doanh và nguyên tắc
+DALIFA BOOKS là website bán sách, cho phép khách tìm sách, xem thông tin, chọn sách và đặt đơn. Nhân viên quản trị quản lý sản phẩm, giá, tồn kho và tiến trình xử lý đơn hàng.
+Ưu tiên phiên bản đầu: dùng được trên localhost, dữ liệu lưu bền sau khi đóng ứng dụng, thao tác mua hàng không bắt đăng ký tài khoản, quản trị tách khỏi giao diện khách hàng.
+Ưu tiên giao diện điện thoại, nhưng vẫn dùng được trên desktop.
+Luồng mua cơ bản: Mua ngay → Nhập thông tin nhận hàng → Đặt hàng.
+Backend quyết định giá, voucher, phí giao hàng và tổng tiền.
+Đặt hàng và thay đổi kho phải nhất quán trong một transaction.
+Không xóa sách có lịch sử đơn hàng; chuyển sang lưu trữ.
+Không yêu cầu khách xác nhận email để mua hàng; không dùng popup chặn ngay khi vào website.
+Tên miền dự kiến: dalifabooks.com. Đăng ký tên miền, hosting và dịch vụ bên ngoài chưa cần cho mục tiêu localhost; chưa có xác nhận tên miền đã được mua hay còn trống.
+3. Đối tượng và nhóm chức năng
+Nhóm
+Thiết kế 1.0
+Tình trạng bản 0.1
+Khách vãng lai
+Tìm/xem sách, giỏ hàng, checkout, tra cứu
+Đã có các luồng cốt lõi
+Khách có tài khoản
+Hồ sơ, địa chỉ, lịch sử đơn, đổi mật khẩu
+Chưa triển khai
+Quản trị
+Sản phẩm, kho, đơn, khách, voucher, CMS, báo cáo
+Đã có sản phẩm/kho/đơn/tổng quan/đổi mật khẩu
+Nhân viên
+Tài khoản, vai trò, phân quyền, audit
+Chưa có phân quyền; có audit backend cơ bản
+Catalog
+Sách, phiên bản, danh mục, tác giả, NXB
+Một SKU cho mỗi sách; tác giả/danh mục là trường văn bản
+CMS
+Banner, blog, cấu hình, trang chính sách
+Chưa có quản lý CMS
+Vận hành
+Upload ảnh, Excel import, backup, monitoring
+Chưa có tích hợp tự động
+
+4. Quy tắc nghiệp vụ sản phẩm
+Thông tin sách dự kiến gồm tên, slug/URL, SKU, ISBN, tác giả, nhà xuất bản, nhà phát hành, danh mục, mô tả ngắn, nội dung, ảnh, metadata SEO và trạng thái. Thuộc tính mở rộng gồm năm xuất bản, số trang, kích thước, trọng lượng, độ tuổi và phiên bản bìa.
+Thiết kế đầy đủ tách Product và ProductVariant để một sách có nhiều phiên bản, mỗi phiên bản có SKU, giá và tồn riêng. Bản 0.1 chưa tách variant; mỗi dòng products là một sách/SKU có tồn kho.
+SKU và slug trong bản 0.1 phải duy nhất. Slug chỉ gồm chữ thường không dấu, số và dấu gạch ngang. Giá là số nguyên không âm theo đồng Việt Nam; giá bìa không nhỏ hơn giá bán. ISBN có thể để trống trong dữ liệu thử nghiệm.
+Trạng thái hiện có: ACTIVE (đang bán), ARCHIVED (lưu trữ). Sách lưu trữ không hiện trong catalog công khai và không thể đặt mua từ giỏ cũ. Dòng đơn hàng vẫn giữ tên, SKU, giá và số lượng tại thời điểm mua.
+Không bổ sung đánh giá sao giả vào dữ liệu thật. Card đánh giá 4.9 trong wireframe ban đầu chỉ là ví dụ; bản 0.1 chưa có chức năng đánh giá sản phẩm.
+5. Kho, giỏ hàng và giá
+Khái niệm
+Ý nghĩa
+Bản 0.1
+Tồn thực / stock
+Số lượng đang nằm trong kho
+Số nguyên không âm
+Đang giữ / reserved
+Số dành cho các đơn chưa kết thúc
+Không vượt tồn thực
+Khả dụng / available
+Tồn thực trừ đang giữ
+Được dùng để kiểm tra mua
+Giỏ hàng
+Sách khách muốn mua
+Lưu server, xác định bằng cookie khách
+
+Giỏ hàng không giữ tồn. Vì vậy hai giỏ có thể chọn cùng cuốn cuối; chỉ đơn tạo thành công trước mới giữ được hàng. Mỗi lần cập nhật số lượng và trước tạo đơn đều phải kiểm tra tồn khả dụng.
+Bản hiện tại giới hạn một dòng giỏ từ 1 đến 99 cuốn; quantity = 0 dùng để xóa dòng. Không nhận số âm hay số thập phân. Giá trong giao diện chỉ để hiển thị; khi preview và đặt đơn server đọc lại giá trong database.
+Công thức tiền bản 0.1: tiền sách = tổng giá bán × số lượng; tổng thanh toán = tiền sách − giảm voucher + phí giao hàng. Chưa có lớp giảm giá sản phẩm riêng ngoài chênh lệch giá bìa/giá bán.
+6. Voucher, giao hàng và thanh toán
+Các mức dưới đây là cấu hình mẫu của localhost, chưa phải chính sách kinh doanh được phê duyệt để bán thật.
+Chính sách mẫu
+Giá trị
+Mã voucher
+DALIFA50
+Mức giảm
+50.000đ
+Tiền sách tối thiểu trước giảm
+500.000đ
+Giới hạn lượt dùng
+100
+Phí giao hàng tiêu chuẩn
+30.000đ
+Ngưỡng miễn phí ship
+Tiền sách sau voucher từ 300.000đ
+Thanh toán hiện có
+COD
+
+Voucher phải còn hoạt động, còn lượt và đủ mức mua tối thiểu. Khi tạo đơn thành công, tăng lượt sử dụng; khi hủy đơn, trả lượt sử dụng. Giảm giá không vượt tiền sách.
+Chuyển khoản/QR, callback thanh toán, đối soát COD và tích hợp hãng vận chuyển là kế hoạch tiếp theo. Hiện tại hệ thống dùng COD cho mọi đơn; chưa có trạng thái thanh toán và tiền thực nhận riêng. Doanh thu dashboard là tổng tiền hàng của đơn DELIVERED, không phải báo cáo đối soát tiền thu.
+7. Tạo đơn hàng và transaction
+Thiết kế chung: kiểm tra dữ liệu nhận hàng → khóa/kiểm tra tồn → đọc giá hiện hành → xác minh voucher → tính ship/tổng → tạo đơn → tạo dòng đơn → giữ tồn → ghi giao dịch kho → ghi lịch sử → commit. Nếu bất kỳ bước nào thất bại, rollback toàn bộ.
+Trong SQLite 0.1 dùng BEGIN IMMEDIATE để tuần tự hóa thao tác ghi. PostgreSQL dự kiến sẽ cần khóa/ghi có điều kiện và chiến lược xử lý tranh chấp thích hợp khi chuyển nền tảng.
+Bản hiện tại nhận họ tên, SĐT, tỉnh/thành phố, phường/xã, địa chỉ và ghi chú. SĐT sau bỏ khoảng trắng/dấu chấm/gạch ngang phải có 10 chữ số bắt đầu bằng 0. Lưu địa chỉ thành một chuỗi ghép; chưa có danh mục địa giới hành chính chính thức.
+Sau tạo đơn: xóa giỏ hàng của khách. Gửi lại cùng giỏ trống sẽ bị từ chối, giúp chặn trường hợp bấm đặt hai lần với giỏ đã xử lý. Chưa có khóa idempotency để truy hồi kết quả khi mạng ngắt sau khi server tạo đơn; nên bổ sung trước production.
+Mã đơn hiện tại có dạng DLF-YYMMDD-XXXXXXXX, trong đó hậu tố được sinh ngẫu nhiên từ 4 byte. Không dùng ID database làm mã hiển thị. Mã không được xem là bí mật xác thực: tra cứu công khai vẫn phải có SĐT khớp.
+Ngày trong mã đơn 0.1 dùng UTC theo mã nguồn; màn hình lịch sử dùng múi giờ trình duyệt. Khi bán thật tại Việt Nam cần thống nhất quy tắc ngày theo Asia/Ho_Chi_Minh.
+8. Trạng thái đơn và thay đổi tồn
+Trạng thái hiện tại
+Cho phép chuyển tiếp
+Tác động kho
+PENDING — Chờ xác nhận
+CONFIRMED, CANCELLED
+Đang giữ hàng
+CONFIRMED — Đã xác nhận
+PACKING, CANCELLED
+Tiếp tục giữ
+PACKING — Đang đóng gói
+SHIPPING, CANCELLED
+Tiếp tục giữ
+SHIPPING — Đang giao
+DELIVERED
+Tiếp tục giữ
+DELIVERED — Giao thành công
+Không chuyển tiếp trong bản 0.1
+Giảm stock và reserved bằng số lượng giao
+CANCELLED — Đã hủy
+Không chuyển tiếp trong bản 0.1
+Chỉ giảm reserved; trả lượt voucher
+
+Không cho CANCELLED → DELIVERED; không cho DELIVERED → DELIVERED để tránh trừ kho hai lần. Không cho hủy đơn đang giao trong bản 0.1. Luồng giao thất bại, hoàn hàng, hoàn tiền và đổi trả chưa được triển khai.
+Lịch sử kho hiện có các loại IMPORT, ADJUST, RESERVE, RELEASE, SALE. Thêm sách tạo bản ghi nhập; sửa tồn tạo bản ghi điều chỉnh. Không được chỉnh tồn thực thấp hơn lượng đang giữ cho đơn hàng.
+9. Thiết kế database 1.0
+Phần này là mô hình mục tiêu được hệ thống hóa để tiếp tục xây dựng; không phải migration PostgreSQL đã có trong gói source.
+Nhóm
+Các thực thể dự kiến
+Trách nhiệm
+Catalog
+Product, ProductVariant, Category, Author, Publisher, ProductImage
+Thông tin sách, phiên bản, hình ảnh và phân loại
+Customer
+Customer, CustomerAddress, CustomerSession
+Tài khoản, địa chỉ, phiên đăng nhập
+Commerce
+Cart, CartItem, Order, OrderItem, OrderHistory
+Giỏ và hồ sơ mua hàng
+Promotion
+Coupon, CouponRedemption
+Điều kiện ưu đãi, lượt sử dụng
+Warehouse
+Inventory, InventoryTransaction
+Tồn vật lý, giữ hàng, lịch sử
+Payment/Shipping
+Payment, Shipment
+Thanh toán, đối soát, vận chuyển
+CMS
+Banner, BlogPost, Setting
+Nội dung và cấu hình
+Administration
+Staff, Role, Permission, AuditLog
+Quyền hạn và dấu vết thay đổi
+
+Quan hệ mục tiêu: Product có nhiều ProductVariant và ProductImage; Product gắn Category/Author theo quan hệ phù hợp; ProductVariant có tồn kho; Cart có CartItem; Order có OrderItem và OrderHistory; Order có thể gắn Customer hoặc khách vãng lai; Customer có nhiều Address; Staff gắn Role/Permission và AuditLog.
+Cần bảo toàn snapshot trên OrderItem, không đọc lại giá hiện tại để tính đơn cũ. Phải có ràng buộc duy nhất cho SKU, slug và mã đơn; khóa ngoại không được làm mất lịch sử khi lưu trữ sản phẩm. Khi thiết kế voucher nhiều người dùng cần bảo đảm giới hạn lượt trong cùng transaction.
+10. Database SQLite đã triển khai
+Bảng
+Các trường chính
+Vai trò
+products
+id, slug, title, author, category, sku, isbn, price, list_price, stock, reserved, description, color, status
+Catalog và tồn của một SKU
+admins
+id, email, password
+Tài khoản quản trị, password lưu hash
+sessions
+token, admin_id, expires
+Session quản trị
+carts
+token, product_id, quantity
+Giỏ vãng lai; khóa chính ghép token/product_id
+orders
+id, code, phone, recipient, address, note, status, subtotal, discount, shipping, total, coupon, created
+Đơn COD
+order_items
+id, order_id, product_id, title, sku, price, quantity
+Snapshot dòng đơn
+history
+id, order_id, status, created
+Lịch sử trạng thái
+inventory_history
+id, product_id, kind, quantity, note, created
+Giao dịch kho
+coupons
+code, amount, min_total, limit_count, used, active
+Voucher cố định
+audit
+id, admin_id, action, detail, created
+Audit backend cơ bản
+
+Khóa ngoại được bật; SQLite dùng WAL và busy_timeout = 5000ms. Stock và reserved có CHECK bảo đảm không âm, reserved không vượt stock. Bản này không sử dụng Prisma; schema tự tạo khi module database được nạp và chưa có hệ thống migration có phiên bản.
+Audit hiện ghi lưu sản phẩm, chuyển trạng thái đơn và đổi mật khẩu; chưa có màn hình xem audit và chưa phải audit đầy đủ mọi thao tác.
+11. API mục tiêu của DALIFA BOOKS 1.0
+Tiền tố chung: /api/v1. Bảng này là thiết kế giao diện API đầy đủ; không đồng nghĩa tất cả endpoint đã triển khai.
+Nhóm
+Phương thức và đường dẫn
+Mục đích
+Giỏ
+GET /cart
+Xem giỏ
+Giỏ
+POST /cart/items
+Thêm variant và số lượng
+Giỏ
+PATCH /cart/items/{id}
+Thay đổi số lượng
+Giỏ
+DELETE /cart/items/{id}
+Xóa dòng
+Checkout
+POST /checkout/preview
+Tính tiền và kiểm tra tồn
+Đơn
+POST /orders
+Tạo đơn với thông tin nhận hàng
+Tra cứu
+POST /orders/lookup
+Mã đơn và SĐT
+Auth khách
+POST /auth/register; POST /auth/login
+Đăng ký/đăng nhập khách
+Hồ sơ
+GET, PATCH /customer/profile
+Thông tin cá nhân
+Địa chỉ
+GET, POST /customer/addresses
+Xem/thêm địa chỉ
+Địa chỉ
+PATCH, DELETE /customer/addresses/{id}
+Sửa/xóa địa chỉ
+Đơn khách
+GET /customer/orders; GET /customer/orders/{orderCode}
+Lịch sử/chi tiết đúng chủ sở hữu
+Admin sách
+GET, POST /admin/products
+Liệt kê/thêm
+Admin sách
+GET, PATCH, DELETE /admin/products/{id}
+Chi tiết/sửa/lưu trữ
+Import
+POST /admin/products/import
+Kiểm tra Excel, sau đó xác nhận nhập
+Admin đơn
+GET /admin/orders; GET /admin/orders/{id}
+Danh sách/chi tiết
+Trạng thái
+PATCH /admin/orders/{id}/status
+Chuyển trạng thái hợp lệ
+Kho
+POST /admin/inventory/import
+Nhập kho
+Kho
+POST /admin/inventory/adjust
+Điều chỉnh
+Kho
+GET /admin/inventory/history
+Tra cứu lịch sử
+Tổng quan
+GET /admin/dashboard
+Chỉ số vận hành
+
+Filter admin đơn dự kiến: status, payment_status, date_from, date_to, phone, order_code. Lịch sử kho dự kiến lọc theo SKU, sách, thời gian, nhân viên. Các filter server này chưa có đầy đủ trong 0.1.
+Ví dụ request giỏ theo thiết kế: { "variantId": 152, "quantity": 2 }. Request đơn theo thiết kế dùng object recipient, paymentMethod, couponCode và note. Không gửi hoặc không tin price, discount, shippingFee, total từ frontend.
+Excel import dự kiến gồm SKU, ISBN, tên sách, tác giả, giá bìa, giá bán, tồn. Cần preview số dòng hợp lệ, thiếu ISBN, trùng SKU, sai giá; tải file lỗi; chỉ nhập sau xác nhận. Ví dụ 487 hợp lệ, 8 thiếu ISBN, 2 trùng SKU, 3 sai giá là minh họa, không phải dữ liệu đã nhập.
+12. API thực tế của Localhost 0.1
+Phương thức
+Đường dẫn sau /api/v1
+Dữ liệu / hành vi
+GET
+/products
+Sách ACTIVE, có trường available
+GET
+/cart
+Dòng giỏ của cookie khách
+POST
+/cart/items
+productId, quantity; đặt số lượng tuyệt đối; 0 để xóa
+POST
+/checkout/preview
+coupon; trả items/subtotal/discount/shipping/total
+POST
+/orders
+name, phone, province, ward, address, note, coupon
+POST
+/orders/lookup
+code, phone
+POST
+/auth/login
+Email và mật khẩu quản trị
+POST
+/auth/logout
+Xóa session quản trị
+GET
+/admin/me
+Quản trị đang đăng nhập
+GET, POST
+/admin/products
+Liệt kê / tạo sách
+PATCH
+/admin/products/{id}
+Cập nhật toàn bộ thông tin form sách
+GET
+/admin/orders
+Danh sách đơn
+GET
+/admin/orders/{id}
+Chi tiết và lịch sử
+PATCH
+/admin/orders/{id}/status
+status
+GET
+/admin/inventory
+Tối đa 500 bản ghi kho mới nhất
+GET
+/admin/dashboard
+orders, pending, revenue, lowStock
+POST
+/admin/password
+current, password; xóa mọi session của admin
+
+Lưu ý khác biệt: /auth/login hiện chỉ phục vụ admin. Bản hiện tại dùng productId thay variantId; chưa có endpoint PATCH/DELETE cho dòng giỏ, thay bằng POST đặt quantity. Input tạo đơn hiện phẳng, không dùng recipient object. PATCH sản phẩm hiện cần gửi đủ trường, không phải cập nhật từng trường tùy ý.
+Phản hồi thành công: { "success": true, "data": ... }. Phản hồi lỗi: { "success": false, "error": { "code": "INSUFFICIENT_STOCK", "message": "..." } }. Trường details về số tồn/requested là thiết kế tương lai; bản hiện tại trả code/message.
+Các lỗi chính: INVALID_INPUT, INVALID_PHONE, INSUFFICIENT_STOCK, EMPTY_CART, INVALID_COUPON, COUPON_MIN_TOTAL, RESERVED_STOCK, INVALID_STATUS, INVALID_LOGIN, UNAUTHORIZED, FORBIDDEN, RATE_LIMIT, DUPLICATE, NOT_FOUND, SERVER_ERROR.
+13. Bảo mật và xác thực
+Thiết kế chung: phân quyền Admin/Customer rõ ràng, không lưu password dạng text, kiểm tra quyền ở backend, rate-limit đăng nhập/đăng ký/tra cứu/áp voucher, kiểm tra file upload, không log mật khẩu hoặc dữ liệu thanh toán nhạy cảm.
+Đã triển khai: mật khẩu scrypt có salt ngẫu nhiên, kiểm tra bằng timingSafeEqual; admin session 8 giờ; cookie HttpOnly và SameSite Strict; cookie giỏ sống 30 ngày; kiểm tra origin khác nguồn trên thao tác ghi; API admin yêu cầu session hợp lệ; dùng prepared statement cho truy vấn.
+Các giới hạn hiện tại cần ghi đúng: cookie localhost chưa dùng Secure vì chạy HTTP; rate-limit dùng bộ nhớ một tiến trình, áp dụng đăng nhập và tra cứu, chưa áp voucher; tra cứu gắn token giỏ nên chưa đủ chống lạm dụng production; chưa có 2FA; chưa có xác thực khách; chưa có quản lý nhiều nhân viên.
+Đổi mật khẩu đòi mật khẩu hiện tại và mật khẩu mới tối thiểu 12 ký tự, rồi xóa mọi session của tài khoản. Trước production cần bổ sung HTTPS, policy mật khẩu, giới hạn dùng chung giữa các instance, dọn session hết hạn và audit đầy đủ.
+Không trả đơn chỉ từ mã đơn dễ đoán. Khách vãng lai phải nhập mã đơn và SĐT khớp; khách có tài khoản tương lai phải được kiểm tra chủ sở hữu đơn ở server.
+14. Sitemap thiết kế đầy đủ
+Nhóm trang
+Các trang dự kiến
+Cửa hàng
+Trang chủ; danh mục; sách mới; bán chạy; khuyến mãi; tìm kiếm; chi tiết sách
+Mua hàng
+Giỏ hàng; thanh toán; đặt hàng thành công; tra cứu đơn
+Tài khoản
+Hồ sơ; địa chỉ; đơn của tôi; chi tiết đơn; đổi mật khẩu
+Nội dung
+Blog; chi tiết bài; giới thiệu; liên hệ
+Chính sách
+Giao hàng; đổi trả; bảo mật; điều khoản
+Admin
+Dashboard; đơn; sản phẩm; danh mục; tác giả; NXB; kho; khách; voucher; banner; blog; báo cáo; nhân viên; cấu hình
+
+URL mục tiêu: /van-hoc, /nha-gia-kim, /gio-hang; URL ngắn, dễ đọc. Bản 0.1 hiện chỉ có route Next.js / và /admin, các màn hình cửa hàng chuyển bằng hash: #home, #catalog, #book/{slug}, #cart, #checkout, #success, #lookup. Cần chuyển sang route thật để làm SEO từng sách.
+15. UI/UX storefront
+Header desktop dự kiến: thanh chính sách ship, logo DALIFA BOOKS, ô tìm tên/tác giả/ISBN, tài khoản và giỏ; thanh danh mục, sách mới, bán chạy, khuyến mãi, blog. Search suggestion theo tác giả và sản phẩm là thiết kế tương lai; bản 0.1 hiện lọc danh sách theo nội dung gõ, chưa có dropdown gợi ý.
+Trang chủ mục tiêu: banner → danh mục nổi bật → bán chạy → sách mới → giảm giá → thiếu nhi → văn học → kinh tế/kỹ năng → blog/gợi ý → chính sách → footer. Bản hiện tại có khu giới thiệu và một catalog, chưa có các tập dữ liệu riêng cho bán chạy/sách mới.
+Card sách thống nhất: ảnh bìa, tên, tác giả, giá bán, giá bìa và ưu đãi nếu có; mobile 2 cuốn/hàng, desktop nhiều cột. Bản 0.1 sử dụng bìa chữ màu minh họa với nhãn sách mẫu, không phải ảnh bìa thật.
+Danh sách mục tiêu có lọc giá/tác giả/NXB/độ tuổi, sắp xếp và phân trang; mobile dùng nút mở bộ lọc. Hiện đã có tìm kiếm, danh mục và sắp xếp giá; chưa có bộ lọc nâng cao và phân trang.
+Chi tiết mục tiêu: breadcrumb, ảnh lớn/thumbnails, tên, tác giả, NXB, giá, chọn phiên bản, số lượng, thêm giỏ và mua ngay; phía dưới là giới thiệu, bảng ISBN/năm/số trang/kích thước/trọng lượng, sách cùng tác giả và gợi ý. Bản 0.1 chỉ có thông tin cơ bản, số lượng và CTA; chưa có variant, gallery, related books hoặc thanh mua cố định đáy mobile.
+Giỏ hàng: từng sách, đơn giá, số lượng, tổng dòng, xóa, tạm tính và nút đặt hàng. Thay số lượng phải kiểm tra tồn. Checkout một trang, không bắt đăng nhập; họ tên/SĐT/tỉnh/phường/địa chỉ/ghi chú, giao hàng, COD, voucher và tổng do server trả.
+Trang thành công: mã đơn, tổng, COD, nhắc lưu mã, xem đơn và tiếp tục mua. Tra cứu: mã + SĐT; hiển thị khách, địa chỉ, sản phẩm, tổng và lịch sử. Lộ trình trạng thái đồ họa là ý tưởng UI; bản hiện tại dùng danh sách lịch sử.
+16. UI/UX Admin và thương hiệu
+Admin dùng bố cục riêng với sidebar và vùng làm việc. Mục tiêu thao tác nhanh: tổng quan các chỉ số, đơn cần xử lý, hàng sắp hết; danh sách sản phẩm tìm theo tên/SKU/ISBN; danh sách đơn theo trạng thái và thông tin liên hệ.
+Form sách mục tiêu có tab Thông tin, Giá & Kho, Hình ảnh, SEO; có lưu nháp/xuất bản. Form 0.1 hiện là một form đơn giản, chưa có tab, upload hay SEO; trạng thái chỉ ACTIVE/ARCHIVED.
+Phong cách DALIFA BOOKS: hiện đại, sạch, dễ đọc, bìa sách là trọng tâm. Thiết kế trước đó gợi ý nền trắng/kem và Inter/Be Vietnam Pro; bản 0.1 thực tế dùng Arial/Helvetica cho nội dung, Georgia cho điểm nhấn, xanh đậm #164b41, kem #f8f6ef và điểm nhấn #b26e27.
+Logo hiện là chữ DALIFA và BOOKS, favicon đơn giản. Chưa chốt hệ nhận diện/logo biểu tượng chuyên nghiệp. Breakpoint thiết kế ban đầu: mobile <768px, tablet 768–1024px, desktop >1024px, large >1440px. CSS 0.1 thực tế có các ngưỡng 700px và 1024px; cần rà soát các thiết bị thật khi hoàn thiện.
+17. Kiến trúc kỹ thuật mục tiêu
+Thành phần
+Thiết kế 1.0
+Frontend
+Next.js + TypeScript
+Backend
+Next.js server/API và các module nghiệp vụ
+UI
+Tailwind CSS dự kiến
+Database
+PostgreSQL
+ORM
+Prisma
+Auth
+Session/JWT qua HttpOnly cookie; chọn cụ thể khi triển khai
+Ảnh
+Cloudflare R2
+DNS/CDN
+Cloudflare
+Email
+Dịch vụ transactional email
+Source
+Git, repository GitHub dự kiến
+Production
+VPS hoặc nền tảng hỗ trợ Next.js
+
+Hướng kiến trúc: modular monolith. Storefront, Admin, API và nghiệp vụ trong một project, kết nối database và storage ảnh. Chưa cần microservice, NestJS, Redis hay Elasticsearch cho bản đầu.
+Module mục tiêu: Catalog (sách/variant/danh mục/tác giả/NXB); Commerce (giỏ/checkout/đơn/voucher/ship/payment); Warehouse; Customer; CMS; Administration. Business logic không đặt trong nút giao diện.
+Cấu trúc mục tiêu: app/(store), app/admin, app/api; components/store, components/admin, components/ui; modules/products, orders, inventory, customers, payments, promotions, shipping; lib/db, auth, storage, validation, security; prisma/schema.prisma, migrations, seed.ts; public; tests.
+Bản 0.1 được rút gọn để chạy ngay, chưa có đầy đủ cấu trúc module này và chưa có schema.prisma. Chuyển PostgreSQL/Prisma sẽ là một bước phát triển thực tế, không chỉ đổi biến DATABASE_URL.
+18. Kiến trúc và mã nguồn Localhost 0.1
+Thành phần
+Thực tế hiện có
+Framework
+Next.js 16.3.8
+Giao diện
+React 19.2.0, TypeScript, CSS thuần
+Runtime
+Node.js >=24.0.0; dùng node:sqlite
+Database
+SQLite cục bộ, tự tạo schema và seed
+Auth
+Session lưu database; hash scrypt
+Source package
+DALIFA-BOOKS-localhost.zip
+Lưu dữ liệu
+data/dalifa.sqlite
+Storefront
+app/page.tsx
+Admin
+app/admin/page.tsx
+API
+app/api/[...path]/route.ts
+Nghiệp vụ/schema
+lib/db.mjs
+Style/favicon
+app/globals.css; public/favicon.svg
+Kiểm tra
+tests/commerce.test.mjs; tests/http.test.mjs; tests/run-http.mjs
+
+Các phiên bản trên mô tả đúng gói source đã tạo, không phải khuyến nghị “phiên bản mới nhất”. Localhost bind 127.0.0.1. Không yêu cầu Docker, PostgreSQL, R2, hosting hoặc domain để chạy bản này.
+19. Hướng dẫn cài và chạy trên máy Mac của bạn
+Thư mục bạn đang sử dụng: /Users/manhcuong/Documents/Work/dalifa-books. Các lệnh sau phải chạy trong Terminal trên máy Mac, vì phiên trợ lý từ xa không truy cập được ổ đĩa /Users của bạn.
+Trước hết kiểm tra Node:
+node -v npm -v
+Bản này cần Node 24. Log bạn gửi có Node v20.20.2 và cảnh báo EBADENGINE, dù Next.js đã báo Ready; vì thế chưa thể kết luận API database chạy được. Giao diện có thể mở nhưng phần node:sqlite cần được chạy dưới Node 24.
+Cách nâng đã hướng dẫn: mở https://nodejs.org/en/download, chọn dòng Node 24 LTS cho macOS và tải Installer (.pkg), mở file cài đặt; đóng/mở lại Terminal rồi chạy node -v. Nếu vẫn hiện v20, kiểm tra which node để biết đường dẫn đang ưu tiên; có thể máy đang dùng một trình quản lý phiên bản khác. Không cần nâng npm riêng để chạy dự án này.
+Chạy lần đầu:
+cd /Users/manhcuong/Documents/Work/dalifa-books npm ci npm run dev
+Mở http://127.0.0.1:3000 hoặc http://localhost:3000; dùng nhất quán một hostname để cookie không tách. Giữ Terminal đang chạy mở. Dừng bằng Ctrl+C. Lần sau chỉ cần cd vào thư mục và npm run dev.
+Nếu cổng 3000 bị chiếm:
+npm run dev -- --port 3001
+Khi đó truy cập localhost:3001. Gói source có start-macos.command và start-windows.bat để hỗ trợ chạy, nhưng vẫn cần Node 24 và cài dependencies thành công.
+Dấu hiệu server đã khởi động: “Ready” và địa chỉ Local. Để xác nhận toàn bộ hoạt động, cần mở trang, thấy sách mẫu, thêm giỏ và đặt một đơn; “Ready” chỉ xác nhận tiến trình web đã sẵn sàng.
+20. Tài khoản quản trị và dữ liệu mẫu
+Admin: http://localhost:3000/admin. Tài khoản mặc định chỉ dùng thử localhost:
+Email: admin@dalifabooks.local Mật khẩu: DalifaLocal2026!
+Có thể đổi trong Admin → Đổi mật khẩu; sau đổi phải đăng nhập lại. Muốn dùng email/mật khẩu khác ngay từ đầu, sao chép .env.example thành .env.local và đặt ADMIN_EMAIL/ADMIN_PASSWORD trước khi database được khởi tạo. Sửa env không ghi đè admin đã tồn tại.
+Sách mẫu
+Tác giả
+Giá bán
+Tồn ban đầu
+Nhà Giả Kim
+Paulo Coelho
+99.000đ
+50
+Mắt Biếc
+Nguyễn Nhật Ánh
+85.000đ
+30
+Hoàng Tử Bé
+Antoine de Saint-Exupéry
+65.000đ
+40
+Thói Quen Tí Hon
+James Clear
+149.000đ
+25
+Tư Duy Nhanh Và Chậm
+Daniel Kahneman
+179.000đ
+18
+Cây Cam Ngọt Của Tôi
+José Mauro de Vasconcelos
+108.000đ
+35
+English Grammar in Use
+Raymond Murphy
+199.000đ
+12
+Doraemon — Tập 1
+Fujiko F. Fujio
+25.000đ
+60
+
+Giá, tồn và mô tả là dữ liệu seed minh họa; ISBN chưa cập nhật, ảnh bìa chưa phải ảnh thật. Sau thao tác thử, tồn thực tế sẽ thay đổi. Không dùng các dữ liệu mẫu làm cam kết bán hàng.
+21. Quy trình thử và vận hành localhost
+Chọn một hoặc nhiều sách, kiểm tra thêm giỏ và mua ngay.
+Tăng/giảm/xóa trong giỏ; thử vượt tồn để thấy lỗi thân thiện.
+Điền đầy đủ thông tin nhận hàng, xem tiền server trả.
+Thử mã DALIFA50 với tiền sách từ 500.000đ; thử một mã sai.
+Đặt COD, lưu mã đơn và SĐT; tra cứu bằng đúng/sai SĐT.
+Vào Admin kiểm tra đơn mới, thông tin, snapshot sản phẩm và tổng tiền.
+Chuyển lần lượt CONFIRMED → PACKING → SHIPPING → DELIVERED; xem kho sau giao.
+Với một đơn thử khác, hủy trước khi giao; xem reserved được trả.
+Thêm/sửa sách; thử lưu trữ, đổi giá và điều chỉnh tồn.
+Sao lưu: dừng ứng dụng rồi sao chép toàn bộ thư mục data. Giữ cả các tệp liên quan SQLite nếu có. Khôi phục: dừng ứng dụng, lưu bản dữ liệu hiện tại, thay thư mục data bằng bản sao phù hợp rồi khởi động lại.
+Muốn tạo lại dữ liệu mẫu: dừng ứng dụng và đổi tên data thành data-backup; khởi động lại sẽ tạo database mới. Việc này làm website dùng database mới, không tự mang đơn cũ sang.
+Chỉ sao chép source code không đồng nghĩa sao chép dữ liệu vận hành. ZIP đã giao không chứa node_modules, .next hoặc database chứa đơn thử.
+22. Kiểm tra và bằng chứng hoàn thành
+Các kiểm tra đã chạy thành công trong môi trường phát triển của trợ lý:
+Kiểm tra
+Kết quả đã có
+npm run build
+Biên dịch Next.js và kiểm tra TypeScript thành công
+Nghiệp vụ
+5 bài kiểm tra thành công, dùng SQLite tạm
+API tích hợp
+1 bài kiểm tra gồm nhiều tình huống thành công, database tạm
+UI bằng trình duyệt
+Chưa thực hiện được; tải Chromium thất bại trong môi trường
+
+Kiểm tra nghiệp vụ bao phủ hash mật khẩu, bỏ qua total/price do client gửi, ngăn đặt lại từ giỏ trống, tranh chấp cuốn cuối giữa hai giỏ, rollback đơn lỗi, giữ/trả/xuất kho, chuyển trạng thái không hợp lệ, voucher và giới hạn chỉnh tồn.
+Kiểm tra API bao phủ admin chưa đăng nhập bị từ chối, catalog, origin khác nguồn bị chặn, đặt đơn, tra cứu sai/đúng SĐT, đăng nhập admin, hủy đơn, logout và session không còn quyền. Chưa kiểm thử tải lớn, nhiều tiến trình, UX trên thiết bị thật hay luồng payment/giao vận.
+Chạy lại:
+npm test npm run build npm run test:http npm start
+test:http cần build trước; runner khởi động server riêng cổng 3011 với dữ liệu tạm và dọn sau kiểm tra. npm start dùng bản build production cục bộ. Log trên Mac do bạn gửi xác nhận dev server Ready, nhưng chưa có bằng chứng bạn đã nâng Node 24 hoặc thử đặt đơn thành công.
+23. SEO, search, upload và nội dung dự kiến
+SEO mục tiêu: HTML server có title/meta riêng từng sách, Product/Book/Breadcrumb structured data, sitemap.xml và robots.txt. URL đẹp cho sách/danh mục; không phụ thuộc hash để index. Bản 0.1 chỉ có metadata website cơ bản.
+Search mục tiêu: tên, tác giả, ISBN, SKU, NXB; khởi đầu PostgreSQL phù hợp quy mô nhỏ, chưa cần Elasticsearch. Bản hiện tại tải catalog và tìm phía trình duyệt theo tên/tác giả/ISBN/SKU, có chuẩn hóa dấu kết hợp; chưa có search server, phân trang hay xếp hạng liên quan.
+Upload mục tiêu: kiểm tra định dạng, dung lượng và kích thước; tạo các phiên bản ảnh original/1200/600/300px, danh sách tải ảnh nhỏ; storage R2 dự kiến. Hiện chưa có chức năng upload và chưa kết nối R2.
+CMS mục tiêu: banner, bài blog, giới thiệu, liên hệ và chính sách; nội dung phải được chốt trước bán thật. Chưa có các màn hình quản lý tương ứng trong localhost.
+24. Môi trường, deploy và vận hành production
+Mục tiêu ba môi trường: Development → Staging → Production. Staging dự kiến staging.dalifabooks.com; production dalifabooks.com. Không thử tính năng mới trực tiếp trên site khách đang mua.
+Domain dự kiến chọn dalifabooks.com làm chính, redirect www sang domain chính, HTTPS bắt buộc. Admin có thể dùng /admin, chưa cần subdomain riêng. Chưa có thao tác đăng ký DNS hoặc deploy thực tế.
+Quy trình mục tiêu: commit source → build/tests → migration tương thích có kiểm soát → deploy → health check. Thứ tự migration/deploy phải chốt theo nền tảng và tính tương thích, không coi sơ đồ trước đây là script chạy sẵn.
+Backup mục tiêu: database mỗi ngày, giữ nhiều phiên bản, backup ảnh và cấu hình; kiểm tra phục hồi định kỳ. Monitoring: trạng thái web/API/database, lỗi, CPU/RAM, ổ đĩa và job backup; cảnh báo khi có sự cố.
+Logging mục tiêu: lỗi nghiệp vụ và vận hành, tránh password và dữ liệu nhạy cảm; giảm PII trong log, không sao chép mẫu log có dữ liệu khách thật. Audit cần xác định ai làm gì, đối tượng, thời gian và dữ liệu thay đổi.
+Git workflow dự kiến: main, develop và feature/product, cart, checkout, admin. Bản source đã đóng gói chưa xác nhận có repository GitHub, CI/CD hoặc staging. Không sửa code trực tiếp trên production.
+Secrets mục tiêu: DATABASE_URL, AUTH_SECRET nếu giải pháp auth cần, R2_ACCESS_KEY/R2_SECRET_KEY, EMAIL_API_KEY, PAYMENT_SECRET. Không đưa secret thật vào repository. Bản 0.1 hiện dùng ADMIN_EMAIL/ADMIN_PASSWORD và DATA_DIR; chưa kết nối các dịch vụ này.
+Chưa cần mua VPS lớn, managed database hay dịch vụ trả phí để chạy local. Chi phí triển khai thật chỉ đánh giá sau khi chọn nhà cung cấp, lưu lượng và mức vận hành.
+25. Lộ trình từ 0.1 tới 1.0
+Giai đoạn
+Công việc chính
+Tình trạng
+Nền tảng local
+Next.js, SQLite, admin auth, seed, kiểm tra
+Đã có bản đầu
+Catalog đầy đủ
+Variant, bảng danh mục/tác giả/NXB, ISBN, ảnh thật
+Còn cần làm
+Storefront
+Route thật, SEO, bộ lọc, gợi ý tìm, gallery
+Còn cần làm
+Commerce
+Order/Inventory/COD cốt lõi
+Đã có; cần idempotency và luồng hoàn/đổi
+Customer/CMS
+Tài khoản khách, địa chỉ, banner, blog, setting
+Chưa triển khai
+Admin mở rộng
+Nhân viên/phân quyền, Excel import, voucher UI, báo cáo
+Chưa triển khai
+Dữ liệu mục tiêu
+PostgreSQL, Prisma, migration và chuyển dữ liệu
+Chưa triển khai
+Staging
+Upload R2, email, test UI, bảo mật, performance, backup
+Chưa triển khai
+Production
+Domain, HTTPS, deploy, health check, monitoring
+Chưa triển khai
+
+Thứ tự phù hợp lúc này: xác nhận máy Mac chạy Node 24 và đặt được đơn; sửa lỗi sử dụng thực tế nếu có; nhập catalog/ảnh thật; chuyển cấu trúc dữ liệu và route; mở rộng chức năng theo nhu cầu vận hành; cuối cùng chuẩn bị staging/production.
+Không coi các phần “Business Requirements, ERD, API, UI/UX” từng được mô tả là code đã hoàn thành. Bản giao hiện tại là nền tảng localhost dùng thử với các chức năng cốt lõi được liệt kê rõ trong tài liệu này.
+Phụ lục A. Ví dụ request thực tế
+Đặt số lượng tuyệt đối 2 cuốn của productId 1 trong giỏ:
+POST /api/v1/cart/items Content-Type: application/json
+{"productId":1,"quantity":2}
+Preview checkout:
+POST /api/v1/checkout/preview
+{"coupon":"DALIFA50"}
+Tạo đơn bản 0.1:
+POST /api/v1/orders
+{   "name": "Khách thử nghiệm",   "phone": "0900000000",   "province": "Hà Nội",   "ward": "Phường mẫu",   "address": "Số 1, đường mẫu",   "note": "Giao giờ hành chính",   "coupon": "" }
+Tra cứu:
+POST /api/v1/orders/lookup
+{"code":"DLF-261006-XXXXXXXX","phone":"0900000000"}
+Chuyển trạng thái quản trị (cần session cookie):
+PATCH /api/v1/admin/orders/1/status
+{"status":"PACKING"}
+API chưa có công cụ thanh toán online; không gửi số thẻ hoặc dữ liệu thanh toán vào endpoint đặt COD.
+Phụ lục B. Các điểm cần chốt trước bán thật
+Catalog, phiên bản sách, ISBN, giá bán và ảnh bìa hợp lệ.
+Phí ship, ngưỡng miễn phí, voucher, hãng vận chuyển và khu vực phục vụ.
+Thông tin pháp nhân/liên hệ, chính sách giao/đổi/trả/bảo mật và điều khoản.
+COD, chuyển khoản/QR, đối soát, giao thất bại và hoàn hàng.
+Vai trò nhân viên, quyền sửa giá/tồn và phê duyệt đơn.
+Quy mô dữ liệu, database/storage, backup và quy trình khôi phục.
+Kiểm tra trên máy người dùng và thiết bị di động, thử khôi phục khi mất mạng.
+HTTPS, secrets, rate-limit production, bảo vệ upload và dữ liệu khách.
+Các mục này là việc cần hoàn thiện theo lộ trình, không phải yêu cầu bạn mua hoặc xác nhận dịch vụ ngay trong giai đoạn localhost.

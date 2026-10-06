@@ -1,0 +1,121 @@
+<footer class="footer">
+	<div class="first-footer d-flex">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-4 col-md-12 col-12">
+					<a href="/" class="logo">	
+						<img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=" data-src="//bizweb.dktcdn.net/thumb/grande/100/197/269/themes/890698/assets/logo_footer.png?1791194270718" alt="Alpha Books">
+					</a>
+					<div class="foo-desc">
+						<i>"Chúng tôi không bán sách, chúng tôi bán kiến thức quản trị vượt trội của các tập đoàn hàng đầu."<br>Công ty Cổ phần Sách Alpha<br>MST: 0101602138<br>Ngày cấp: 
+27/01/2005<br>Nơi cấp: Phòng ĐKKD - Sở Kế Hoạch & Đầu Tư Thành Phố Hà Nội </i>
+
+					</div>
+					<div class="mailchim">
+						<h4 class="title-menu faild">Đăng ký nhận khuyến mãi</h4>
+						<form id="mc-form" class="newsletter-form" data-toggle="validator" novalidate="true">
+							<input aria-label="Địa chỉ Email" type="email" class="form-control" placeholder="Địa chỉ email" name="EMAIL" required="" autocomplete="off">
+							<button class="btn btn-default" type="submit" aria-label="Đăng ký nhận tin" name="subscribe">Gửi</button>
+						</form>
+						<div class="mailchimp-alerts ">
+							<div class="mailchimp-submitting"></div><!-- mailchimp-submitting end -->
+							<div class="mailchimp-success"></div><!-- mailchimp-success end -->
+							<div class="mailchimp-error"></div><!-- mailchimp-error end -->
+						</div>
+						<script>
+							(function($){"use strict";$.ajaxChimp={responses:{"We have sent you a confirmation email":0,"Please enter a valueggg":1,"An email address must contain a single @":2,"The domain portion of the email address is invalid (the portion after the @: )":3,"The username portion of the email address is invalid (the portion before the @: )":4,"This email address looks fake or invalid. Please enter a real email address":5},translations:{en:null},init:function(selector,options){$(selector).ajaxChimp(options)}};$.fn.ajaxChimp=function(options){$(this).each(function(i,elem){var form=$(elem);var email=form.find("input[type=email]");var label=form.find("label[for="+email.attr("id")+"]");var settings=$.extend({url:form.attr("action"),language:"en"},options);var url=settings.url.replace("/post?","/post-json?").concat("&c=?");form.attr("novalidate","true");email.attr("name","EMAIL");form.submit(function(){var msg;function successCallback(resp){if(resp.result==="success"){msg="We have sent you a confirmation email";label.removeClass("error").addClass("valid");email.removeClass("error").addClass("valid")}else{email.removeClass("valid").addClass("error");label.removeClass("valid").addClass("error");var index=-1;try{var parts=resp.msg.split(" - ",2);if(parts[1]===undefined){msg=resp.msg}else{var i=parseInt(parts[0],10);if(i.toString()===parts[0]){index=parts[0];msg=parts[1]}else{index=-1;msg=resp.msg}}}catch(e){index=-1;msg=resp.msg}}if(settings.language!=="en"&&$.ajaxChimp.responses[msg]!==undefined&&$.ajaxChimp.translations&&$.ajaxChimp.translations[settings.language]&&$.ajaxChimp.translations[settings.language][$.ajaxChimp.responses[msg]]){msg=$.ajaxChimp.translations[settings.language][$.ajaxChimp.responses[msg]]}label.html(msg);label.show(2e3);if(settings.callback){settings.callback(resp)}}var data={};var dataArray=form.serializeArray();$.each(dataArray,function(index,item){data[item.name]=item.value});$.ajax({url:url,data:data,success:successCallback,dataType:"jsonp",error:function(resp,text){console.log("mailchimp ajax submit error: "+text)}});var submitMsg="Submitting...";if(settings.language!=="en"&&$.ajaxChimp.translations&&$.ajaxChimp.translations[settings.language]&&$.ajaxChimp.translations[settings.language]["submit"]){submitMsg=$.ajaxChimp.translations[settings.language]["submit"]}label.html(submitMsg).show(2e3);return false})});return this}})(jQuery);
+							$('#mc-form').ajaxChimp({
+								language: 'en',
+								callback: mailChimpResponse,
+								url: ''
+							});
+							function mailChimpResponse(resp) {
+								if (resp.result === 'success') {
+									if(resp.msg == 'Thank you for subscribing!'){
+										$('.mailchimp-success').html('Cảm ơn bạn đã đăng ký!').fadeIn(900);
+									}else{
+										$('.mailchimp-success').html('' + resp.msg).fadeIn(900);
+									}
+									$('.mailchimp-error').fadeOut(100);
+								} else if (resp.result === 'error') {
+									if(resp.msg == '0 - Please enter a value'){
+										$('.mailchimp-error').html('Vui lòng nhập các trường thông tin').fadeIn(900);
+									}else if(resp.msg == '0 - An email address must contain a single @'){
+										$('.mailchimp-error').html('Địa chỉ email phải chứa ký tự @').fadeIn(900);
+									}else if(resp.msg == 'This email cannot be added to this list. Please enter a different email address.'){
+										$('.mailchimp-error').html('Email này không thể được thêm vào danh sách này. Vui lòng nhập một địa chỉ email khác.').fadeIn(900);
+									}else if(resp.msg.includes('0 - The domain portion of the email address is invalid')){
+										$('.mailchimp-error').html('Phần tên miền của địa chỉ email không hợp lệ').fadeIn(900);
+									}else if(resp.msg.includes('0 - The username portion of the email address is empty')){
+										$('.mailchimp-error').html('Phần tên người dùng của địa chỉ email trống').fadeIn(900);
+									}else if(resp.msg == 'Thank you for subscribing!'){
+										$('.mailchimp-error').html('Cảm ơn bạn đã đăng ký!').fadeIn(900);
+									}else{
+										$('.mailchimp-error').html('' + resp.msg).fadeIn(900);
+									}
+								}
+							}
+						</script>
+					</div>
+				</div>
+				<div class="col-lg-5 col-md-8 col-12">
+					<div class="row">
+						<div class="col-lg-6 col-md-6 col-12 foo-menu-1">
+							<h4 class="title-menu">THÔNG TIN</h4>
+							<ul class="list-menu">
+								<li class="li_menu"><a href="/gioi-thieu" title="Giới thiệu">Giới thiệu</a></li>
+								<li class="li_menu"><a href="/he-thong-nha-sach" title="Hệ thống nhà sách">Hệ thống nhà sách</a></li>
+								<li class="li_menu"><a href="/he-thong-phat-hanh-mien-bac" title="Hệ thống phát hành">Hệ thống phát hành</a></li>
+								<li class="li_menu"><a href="/tuyen-dung" title="Tuyển dụng">Tuyển dụng</a></li>
+								<li class="li_menu"><a href="/hop-tac-kinh-doanh-alpha-books" title="Hợp tác kinh doanh">Hợp tác kinh doanh</a></li>
+							</ul>
+						</div>
+						<div class="col-lg-6 col-md-6 col-12 foo-menu-2">
+							<h4 class="title-menu">CHÍNH SÁCH <i class="fa fa-plus hidden" aria-hidden="true"></i></h4>
+							<ul class="list-menu">
+								<li class="li_menu"><a href="/chinh-sach-thanh-toan" title="Chính sách thanh toán">Chính sách thanh toán</a></li>
+								<li class="li_menu"><a href="/chinh-sach-van-chuyen" title="Chính sách vận chuyển">Chính sách vận chuyển</a></li>
+								<li class="li_menu"><a href="/chinh-sach-bao-mat" title="Chính sách bảo mật">Chính sách bảo mật</a></li>
+								<li class="li_menu"><a href="https://alphabooks.vn/chinh-sach-doi-tra-hoan-tien" title="Chính sách đổi trả hoàn tiền">Chính sách đổi trả hoàn tiền</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-3 col-md-4 col-12 foo-contact">
+					<h4 class="title-menu faild">LIÊN HỆ</h4>
+					<p class="icon map">
+						Tầng 3, Dream Home Center, 11a ngõ 282 Nguyễn Huy Tưởng, Thanh Xuân, Hà Nội
+					</p>
+					<a class="icon phone" href="tel:0932329959">
+						0932 329 959
+					</a>
+					<a class="icon email" href="mailto:mkt.alphabooks@gmail.com">
+						mkt.alphabooks@gmail.com
+					</a>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="copyright d-flex">
+		<div class="container">
+			<div class="inner">
+				<div class="row tablet">
+					<div id="copyright" class="col-12">
+						<div class="wsp">
+							© Bản quyền thuộc về <a href="/"> Alpha Books</a>
+<span class="block-xs"></span>
+							<span class="opacity1 d-none">
+								Cung cấp bởi 
+<a href="https://www.sapo.vn/?utm_campaign=cpn:site_khach_hang-plm:footer&utm_source=site_khach_hang&utm_medium=referral&utm_content=fm:text_link-km:-sz:&utm_term=&campaign=site_khach_hang" rel="noopener" title="Sapo" target="_blank">Sapo</a>							</span>
+						</div>
+						<a href="http://online.gov.vn/Home/WebDetails/45929" target="_blank"><img src="//bizweb.dktcdn.net/100/197/269/themes/890698/assets/logo_bct.png?1791194270718" style="max-width:160px;margin-top: 5px;" alt="bct"></a>
+
+					</div>
+				</div>
+			</div>
+			<a href="#"  class="backtop"  title="Lên đầu trang"><i class="fa fa-angle-up" aria-hidden="true"></i></a>
+		</div>
+	</div>
+</footer>
